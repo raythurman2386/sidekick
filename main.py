@@ -19,7 +19,7 @@ def on_generate_click():
 root = ctk.CTk()
 root.title("AI Text Generator")
 root.geometry("600x625")
-init_db()
+
 # Input frame
 input_frame = ctk.CTkFrame(root)
 input_frame.pack(pady=20, padx=20, fill='x')
@@ -57,4 +57,6 @@ temperature_slider.set(0.2)
 temperature_slider.pack(side='left', padx=10)
 
 # Run the application
-root.mainloop()
+if __name__ == "__main__":
+    init_db()
+    root.mainloop()
