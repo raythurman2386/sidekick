@@ -18,7 +18,7 @@ def on_generate_click():
 # Main window
 root = ctk.CTk()
 root.title("AI Text Generator")
-root.geometry("600x400")
+root.geometry("600x625")
 init_db()
 # Input frame
 input_frame = ctk.CTkFrame(root)
