@@ -1,5 +1,5 @@
-import customtkinter as ctk
 from tkinter import scrolledtext, END
+import customtkinter as ctk
 from db.database import init_db
 
 from utils.openai import ask_gpt

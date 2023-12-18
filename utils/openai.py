@@ -1,7 +1,6 @@
 from dotenv import load_dotenv
 from db.database import add_message, get_chat_log
 from openai import OpenAI
-from utils.logger import app_logger
 from utils.utils import handle_error
 
 load_dotenv()
@@ -19,10 +18,8 @@ def img_generation(prompt, quality, size):
         )
 
         img_url = response.data[0].url
-        app_logger.info("Image Successfully Generated")
         return img_url
     except Exception as e:
-        app_logger.error(f"Image Generation Failed: {e}")
         return handle_error(e)
 
 
@@ -35,7 +32,6 @@ def ask_gpt(question, model, temperature):
     try:
         # Insert the user's message into the database
         add_message("user", question)
-        app_logger.info("User message added to database")
 
         # Retrieve the chat log from the database
         chat_log = get_chat_log()
@@ -47,13 +43,10 @@ def ask_gpt(question, model, temperature):
             max_tokens=500,
         )
         answer = response.choices[0].message.content
-        app_logger.info("GPT Response successful")
 
         # Insert the bot's response into the database
         add_message("assistant", answer)
-        app_logger.info("Assistant message added to database")
 
         return answer
     except Exception as e:
-        app_logger.error("GPT generation encountered an error: {e}")
         return handle_error(e)
