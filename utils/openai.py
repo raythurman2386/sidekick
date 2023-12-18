@@ -7,6 +7,7 @@ from utils.utils import handle_error
 load_dotenv()
 client = OpenAI()
 
+
 def img_generation(prompt, quality, size):
     try:
         response = client.images.generate(
@@ -26,7 +27,11 @@ def img_generation(prompt, quality, size):
 
 
 def ask_gpt(question, model, temperature):
-    models = {"GPT 3.5 Turbo": "gpt-3.5-turbo","GPT 4": "gpt-4","GPT 4 Turbo": "gpt-4-1106-preview",}
+    models = {
+        "GPT 3.5 Turbo": "gpt-3.5-turbo",
+        "GPT 4": "gpt-4",
+        "GPT 4 Turbo": "gpt-4-1106-preview",
+    }
     try:
         # Insert the user's message into the database
         add_message("user", question)
@@ -36,7 +41,10 @@ def ask_gpt(question, model, temperature):
         chat_log = get_chat_log()
 
         response = client.chat.completions.create(
-            model=models[model], messages=chat_log, temperature=temperature, max_tokens=500
+            model=models[model],
+            messages=chat_log,
+            temperature=temperature,
+            max_tokens=500,
         )
         answer = response.choices[0].message.content
         app_logger.info("GPT Response successful")

@@ -4,7 +4,6 @@ from utils.logger import app_logger
 from utils.utils import handle_error
 
 
-
 anthropic = Anthropic(
     # defaults to os.environ.get("ANTHROPIC_API_KEY")
 )

@@ -1,6 +1,4 @@
-
 from utils.logger import app_logger
-
 
 
 async def format_response(response):
