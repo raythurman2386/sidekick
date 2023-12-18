@@ -13,7 +13,7 @@ def on_generate_click():
     # You would add your logic here to use the prompt, model, and temperature
     # to generate text and stream it back to the text_area.
     # For demonstration purposes, we'll just echo the input.
-    text_area.insert(END, f"Prompt: {prompt}\nModel: {model}\nTemperature: {temperature}\n\nResponse:\n{response}")
+    text_area.insert(END, f"Prompt: {prompt}\nModel: {model}\nTemperature: {temperature}\n\nResponse:\n{response}\n\n")
 
 # Main window
 root = ctk.CTk()
