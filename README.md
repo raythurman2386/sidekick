@@ -29,7 +29,7 @@ pip install -r requirements.txt
 You can then run sidekick:
 
 ```
-python sidekick.py
+python main.py
 ```
 
 ## How It Works
