@@ -1,0 +1,24 @@
+[MASTER]
+
+# Specify the maximum number of characters on a single line
+max-line-length = 120
+
+[MESSAGES CONTROL]
+
+# Enable or disable specific pylint messages
+disable = C0103, C0114, C0115, C0116, C0301, R0903, R0913, R0914, R0915, E0015, W1203, W0718
+
+[TYPECHECK]
+
+# Enable type checking
+generated-members = typing.*, collections.*, enum.*
+
+[REPORTS]
+
+# Set the output format for pylint reports
+output-format = colorized
+
+[LOGGING]
+
+# Set the logging level
+logging-level = WARNING
