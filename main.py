@@ -1,19 +1,15 @@
 from tkinter import messagebox, scrolledtext, END
+import threading
 import customtkinter as ctk
 
 from db.database import add_message, init_db
-import threading
 
 from utils.openai import ask_gpt
-
-import customtkinter as ctk
-from tkinter import scrolledtext
 
 
 class Sidekick(ctk.CTk):
     def __init__(self):
         super().__init__()
-
         self.title("Sidekick")
         self.geometry("600x625")
         self.db = init_db()
@@ -91,11 +87,10 @@ class Sidekick(ctk.CTk):
 
         def process_response(response):
             self.full_response += response
-            
-            self.text_area.insert(END, response)
-            
-            self.text_area.see(END)
 
+            self.text_area.insert(END, response)
+
+            self.text_area.see(END)
 
         def do_generate():
             self.save_to_db("user", prompt)
@@ -113,17 +108,17 @@ class Sidekick(ctk.CTk):
         if self.full_response and role == "assistant":
             add_message(role, question)
             self.full_response = ""
-            
+
         if role == "user":
             add_message(role, question)
             self.prompt_entry.delete(0, END)
-            
+
     def on_closing(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             if self.full_response != "":
                 self.save_to_db("assistant", self.full_response)
             self.destroy()
-        
+
 
 if __name__ == "__main__":
     app = Sidekick()

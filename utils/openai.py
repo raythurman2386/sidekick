@@ -31,7 +31,7 @@ def ask_gpt(model, temperature):
     }
     try:
         chat_log = get_chat_log()
-        
+
         return client.chat.completions.create(
             model=models[model],
             messages=chat_log,
