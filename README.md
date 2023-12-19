@@ -39,3 +39,11 @@ Sidekick provides a text-based conversational interface using OpenAI's advanced 
 The application has a compact footprint and responsive performance even on low-powered machines. The Python-based architecture makes it highly cross-platform as well, supporting Windows, MacOS and Linux with the same codebase.
 
 Overall, Sidekick aims to be an engaging, intelligent and productive addition to your desktop environment. Its conversational capabilities help augment your work, learning, research or even casual interests that you discuss with it.
+
+### Build
+
+If you want to build your own and pin it to your taskbar or startmenu
+
+Pyinstaller is currently in the requirements.txt, so if you properly installed the dependencies you should be able to run:
+
+`pyinstaller --onefile --add-data "sidekick.png:." --windowed main.py`
