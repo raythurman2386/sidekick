@@ -1,4 +1,4 @@
-from tkinter import scrolledtext, END
+from tkinter import messagebox, scrolledtext, END
 import customtkinter as ctk
 
 from db.database import add_message, init_db
@@ -10,16 +10,16 @@ import customtkinter as ctk
 from tkinter import scrolledtext
 
 
-class TextGeneratorUI(ctk.CTk):
+class Sidekick(ctk.CTk):
     def __init__(self):
         super().__init__()
 
-        self.title("AI Text Generator")
+        self.title("Sidekick")
         self.geometry("600x625")
         self.db = init_db()
         self.full_response = ""
-
         self.create_widgets()
+        self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def create_widgets(self):
         # Fonts
@@ -81,24 +81,25 @@ class TextGeneratorUI(ctk.CTk):
     def generate_text(self):
         # Save the complete, PRIOR assistant response, then clears out the full_response var
         # will need reworked as I'm sure there are unintended issues doing it this way.
-        self.save_to_db()
+        if self.full_response != "":
+            self.save_to_db("assistant", self.full_response)
         # just adding a new line to the text area here for now
         self.text_area.insert(END, "\n")
         prompt = self.prompt_entry.get()
         model = self.model_dropdown.get()
         temperature = self.temp_slider.get()
 
-        self.prompt_entry.delete(0, END)
-
         def process_response(response):
             self.full_response += response
             
             self.text_area.insert(END, response)
+            
             self.text_area.see(END)
 
 
         def do_generate():
-            response = ask_gpt(prompt, model, temperature)
+            self.save_to_db("user", prompt)
+            response = ask_gpt(model, temperature)
 
             for chunk in response:
                 if chunk.choices[0].delta.content is not None:
@@ -108,12 +109,22 @@ class TextGeneratorUI(ctk.CTk):
 
         threading.Thread(target=do_generate).start()
 
-    def save_to_db(self):
-        if self.full_response:
-            add_message("assistant", self.full_response)
-            
+    def save_to_db(self, role, question):
+        if self.full_response and role == "assistant":
+            add_message(role, question)
             self.full_response = ""
+            
+        if role == "user":
+            add_message(role, question)
+            self.prompt_entry.delete(0, END)
+            
+    def on_closing(self):
+        if messagebox.askokcancel("Quit", "Do you want to quit?"):
+            if self.full_response != "":
+                self.save_to_db("assistant", self.full_response)
+            self.destroy()
+        
 
 if __name__ == "__main__":
-    app = TextGeneratorUI()
+    app = Sidekick()
     app.mainloop()
