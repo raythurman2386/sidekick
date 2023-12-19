@@ -36,17 +36,13 @@ def ask_gpt(question, model, temperature):
         # Retrieve the chat log from the database
         chat_log = get_chat_log()
 
-        response = client.chat.completions.create(
+        return client.chat.completions.create(
             model=models[model],
             messages=chat_log,
             temperature=temperature,
             max_tokens=500,
+            stream=True,
         )
-        answer = response.choices[0].message.content
 
-        # Insert the bot's response into the database
-        add_message("assistant", answer)
-
-        return answer
     except Exception as e:
         return handle_error(e)
