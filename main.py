@@ -79,6 +79,8 @@ class TextGeneratorUI(ctk.CTk):
         self.temp_slider.pack(side="left", padx=10)
 
     def generate_text(self):
+        # Save the complete, PRIOR assistant response, then clears out the full_response var
+        # will need reworked as I'm sure there are unintended issues doing it this way.
         self.save_to_db()
         # just adding a new line to the text area here for now
         self.text_area.insert(END, "\n")
