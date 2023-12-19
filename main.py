@@ -1,6 +1,9 @@
+import os
 from tkinter import messagebox, scrolledtext, END
 import threading
 import customtkinter as ctk
+
+from PIL import Image, ImageTk
 
 from db.database import add_message, init_db
 
@@ -10,12 +13,20 @@ from utils.openai import ask_gpt
 class Sidekick(ctk.CTk):
     def __init__(self):
         super().__init__()
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(base_path, "images/sidekick.png")
+        bitmap_path = os.path.join(base_path, "images/sidekick.ico")
         self.title("Sidekick")
         self.geometry("600x625")
         self.db = init_db()
         self.full_response = ""
         self.create_widgets()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        self.logo = Image.open(logo_path)
+        self.logo_img = ImageTk.PhotoImage(self.logo)
+        self.iconphoto(True, self.logo_img)
+        self.iconbitmap(bitmap_path)
+        
 
     def create_widgets(self):
         # Fonts
