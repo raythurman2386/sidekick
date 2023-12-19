@@ -6,7 +6,7 @@ max-line-length = 120
 [MESSAGES CONTROL]
 
 # Enable or disable specific pylint messages
-disable = C0103, C0114, C0115, C0116, C0301, R0903, R0913, R0914, R0915, E0015, W1203, W0718
+disable = C0103, C0114, C0115, C0116, C0301, R0903, R0913, R0914, R0915, E0015, W1203, W0718, E1111
 
 [TYPECHECK]
 

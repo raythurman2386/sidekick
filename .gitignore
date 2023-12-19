@@ -121,3 +121,5 @@ cython_debug/
 # PyInstaller
 dist/
 build/
+
+*.spec
