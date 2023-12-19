@@ -35,6 +35,7 @@ class Sidekick(ctk.CTk):
         # Prompt entry
         self.prompt_entry = ctk.CTkEntry(input_frame, width=200)
         self.prompt_entry.pack(side="left", expand=True, fill="x")
+        self.prompt_entry.bind("<Return>", command=self.generate_text)
 
         # Generate button
         generate_button = ctk.CTkButton(
@@ -74,7 +75,9 @@ class Sidekick(ctk.CTk):
         self.temp_slider.set(0.2)
         self.temp_slider.pack(side="left", padx=10)
 
-    def generate_text(self):
+    def generate_text(self, event=None):
+        if self.prompt_entry == "":
+            pass
         # Save the complete, PRIOR assistant response, then clears out the full_response var
         # will need reworked as I'm sure there are unintended issues doing it this way.
         if self.full_response != "":
