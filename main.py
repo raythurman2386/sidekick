@@ -8,7 +8,16 @@ from PIL import Image, ImageTk
 from db.database import add_message, init_db
 
 from utils.openai import ask_gpt
+from utils.markdown import MarkdownTextArea
 
+dark_css = """  
+            <style>
+            body {
+            background-color: #242424; 
+            color: #eee;
+            }
+            </style>
+        """
 
 class Sidekick(ctk.CTk):
     def __init__(self):
@@ -26,12 +35,10 @@ class Sidekick(ctk.CTk):
         self.logo_img = ImageTk.PhotoImage(self.logo)
         self.iconphoto(True, self.logo_img)
         self.iconbitmap(bitmap_path)
-        
 
     def create_widgets(self):
         # Fonts
         default_font = ctk.CTkFont(family="Roboto", size=12)
-        text_area_font = ctk.CTkFont(family="Roboto", size=14)
 
         # Input frame
         input_frame = ctk.CTkFrame(self)
@@ -55,10 +62,13 @@ class Sidekick(ctk.CTk):
         generate_button.pack(side="left", padx=10)
 
         # Text area
-        self.text_area = scrolledtext.ScrolledText(
-            self, wrap="word", font=text_area_font
-        )
+        self.text_area = MarkdownTextArea(self)
         self.text_area.pack(pady=10, padx=20, expand=True, fill="both")
+        
+        clear_button = ctk.CTkButton(
+            input_frame, text="Clear", command=self.text_area.clear, font=default_font, fg_color="red"
+        )
+        clear_button.pack(side="right", padx=10)
 
         # Settings frame
         settings_frame = ctk.CTkFrame(self)
@@ -93,8 +103,7 @@ class Sidekick(ctk.CTk):
         # will need reworked as I'm sure there are unintended issues doing it this way.
         if self.full_response != "":
             self.save_to_db("assistant", self.full_response)
-        # just adding a new line to the text area here for now
-        self.text_area.insert(END, "\n")
+
         prompt = self.prompt_entry.get()
         model = self.model_dropdown.get()
         temperature = self.temp_slider.get()
@@ -102,9 +111,7 @@ class Sidekick(ctk.CTk):
         def process_response(response):
             self.full_response += response
 
-            self.text_area.insert(END, response)
-
-            self.text_area.see(END)
+            self.text_area.insert(response)
 
         def do_generate():
             self.save_to_db("user", prompt)
@@ -112,9 +119,7 @@ class Sidekick(ctk.CTk):
 
             for chunk in response:
                 if chunk.choices[0].delta.content is not None:
-                    threading.Thread(
-                        target=process_response, args=(chunk.choices[0].delta.content,)
-                    ).start()
+                    process_response(chunk.choices[0].delta.content)
 
         threading.Thread(target=do_generate).start()
 
