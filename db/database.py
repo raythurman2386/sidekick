@@ -35,7 +35,7 @@ def init_db():
                 "INSERT INTO chat_log (role, content) VALUES (?, ?)",
                 (
                     "system",
-                    "You are a helpful, desktop assistant. Respond with plain text as accurately as possible to the commands, with just a sprinkle of humor.",
+                    "You are a helpful, desktop assistant. Respond with markdown as accurately as possible to the commands, with just a sprinkle of humor.",
                 ),
             )
 
