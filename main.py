@@ -56,7 +56,7 @@ class Sidekick(ctk.CTk):
 
         # Text area
         self.text_area = scrolledtext.ScrolledText(
-            self, wrap="word", font=text_area_font
+            self, wrap="word", font=text_area_font, autoseparators=True
         )
         self.text_area.pack(pady=10, padx=20, expand=True, fill="both")
 
