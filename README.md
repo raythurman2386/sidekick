@@ -26,6 +26,14 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
+You will need an OpenAI API key to use this project. You can get one for free from the OpenAI website [here](https://platform.openai.com/account/api-keys).
+
+Once you have an API key, create a .env file and set your env variable:
+
+```
+OPENAI_API_KEY="<your_key_here>"
+```
+
 You can then run sidekick:
 
 ```
@@ -46,4 +54,4 @@ If you want to build your own and pin it to your taskbar or startmenu
 
 Pyinstaller is currently in the requirements.txt, so if you properly installed the dependencies you should be able to run:
 
-`pyinstaller --onefile --add-data "sidekick.png:." --windowed main.py`
+`pyinstaller --onefile --windowed --icon="images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="images:images"  main.py`
