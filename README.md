@@ -54,4 +54,4 @@ If you want to build your own and pin it to your taskbar or startmenu
 
 Pyinstaller is currently in the requirements.txt, so if you properly installed the dependencies you should be able to run:
 
-`pyinstaller --onefile --windowed --icon=sidekick.ico --noconsole --hiden-import=tkinter --name="Sidekick" --add-data="images:images"  main.py`
+`pyinstaller --onefile --windowed --icon="images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="images:images"  main.py`
