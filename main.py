@@ -15,7 +15,7 @@ class Sidekick(ctk.CTk):
         super().__init__()
         base_path = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(base_path, "images/sidekick.png")
-        bitmap_path = os.path.join(base_path, "images/sidekick.ico")
+        # bitmap_path = os.path.join(base_path, "images/sidekick.png")
         self.title("Sidekick")
         self.geometry("600x625")
         self.db = init_db()
@@ -25,8 +25,7 @@ class Sidekick(ctk.CTk):
         self.logo = Image.open(logo_path)
         self.logo_img = ImageTk.PhotoImage(self.logo)
         self.iconphoto(True, self.logo_img)
-        self.iconbitmap(bitmap_path)
-        
+        # self.iconbitmap(bitmap_path)
 
     def create_widgets(self):
         # Fonts
@@ -35,7 +34,7 @@ class Sidekick(ctk.CTk):
 
         # Input frame
         input_frame = ctk.CTkFrame(self)
-        input_frame.pack(pady=20, padx=20, fill="x")
+        input_frame.pack(pady=10, padx=20, fill="x")
 
         # Prompt label
         prompt_label = ctk.CTkLabel(
@@ -45,8 +44,8 @@ class Sidekick(ctk.CTk):
 
         # Prompt entry
         self.prompt_entry = ctk.CTkEntry(input_frame, width=200)
-        self.prompt_entry.pack(side="left", expand=True, fill="x")
-        self.prompt_entry.bind("<Return>", command=self.generate_text)
+        self.prompt_entry.pack(side="left", expand=True, fill="x", padx=10)
+        self.prompt_entry.bind("<Return>", self.generate_text)
 
         # Generate button
         generate_button = ctk.CTkButton(
@@ -56,13 +55,15 @@ class Sidekick(ctk.CTk):
 
         # Text area
         self.text_area = scrolledtext.ScrolledText(
-            self, wrap="word", font=text_area_font
+            self,
+            wrap="word",
+            font=text_area_font,
         )
         self.text_area.pack(pady=10, padx=20, expand=True, fill="both")
 
         # Settings frame
         settings_frame = ctk.CTkFrame(self)
-        settings_frame.pack(pady=20, padx=20, fill="x")
+        settings_frame.pack(pady=10, padx=20, fill="x")
 
         # Model dropdown
         model_label = ctk.CTkLabel(settings_frame, text="Model:", font=default_font)
@@ -70,7 +71,7 @@ class Sidekick(ctk.CTk):
 
         self.model_dropdown = ctk.CTkComboBox(
             settings_frame,
-            values=["GPT 3.5 Turbo", "GPT 4", "GPT 4 Turbo"],
+            values=["GPT 3.5 Turbo", "GPT 4", "GPT 4 Turbo", "GPT 4o"],
             font=default_font,
         )
         self.model_dropdown.set("GPT 3.5 Turbo")
@@ -82,18 +83,21 @@ class Sidekick(ctk.CTk):
         )
         temp_label.pack(side="left", padx=10)
 
-        self.temp_slider = ctk.CTkSlider(settings_frame, number_of_steps=100)
+        self.temp_slider = ctk.CTkSlider(
+            settings_frame, from_=0, to=1, number_of_steps=100
+        )
         self.temp_slider.set(0.2)
         self.temp_slider.pack(side="left", padx=10)
 
     def generate_text(self, event=None):
-        if self.prompt_entry == "":
-            pass
-        # Save the complete, PRIOR assistant response, then clears out the full_response var
-        # will need reworked as I'm sure there are unintended issues doing it this way.
-        if self.full_response != "":
+        if not self.prompt_entry.get():
+            return
+
+        if self.full_response:
             self.save_to_db("assistant", self.full_response)
-        # just adding a new line to the text area here for now
+            self.full_response = ""
+
+        # Just adding a new line to the text area here for now
         self.text_area.insert(END, "\n")
         prompt = self.prompt_entry.get()
         model = self.model_dropdown.get()
@@ -101,15 +105,12 @@ class Sidekick(ctk.CTk):
 
         def process_response(response):
             self.full_response += response
-
             self.text_area.insert(END, response)
-
             self.text_area.see(END)
 
         def do_generate():
             self.save_to_db("user", prompt)
             response = ask_gpt(model, temperature)
-
             for chunk in response:
                 if chunk.choices[0].delta.content is not None:
                     threading.Thread(

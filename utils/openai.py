@@ -27,7 +27,8 @@ def ask_gpt(model, temperature):
     models = {
         "GPT 3.5 Turbo": "gpt-3.5-turbo",
         "GPT 4": "gpt-4",
-        "GPT 4 Turbo": "gpt-4-1106-preview",
+        "GPT 4 Turbo": "gpt-4-turbo",
+        "GPT 4o": "gpt-4o",
     }
     try:
         chat_log = get_chat_log()
