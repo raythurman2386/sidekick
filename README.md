@@ -27,6 +27,40 @@ Before installing Sidekick, you need to set up Ollama on your system:
 
 ## Installation
 
+Sidekick now provides automated installation scripts that will set up everything you need, including Ollama and a default AI model. Choose the appropriate method for your operating system:
+
+### Windows
+
+1. Open PowerShell as Administrator
+2. Navigate to the project directory
+3. Run:
+```powershell
+Set-ExecutionPolicy RemoteSigned -Scope Process; .\install.ps1
+```
+
+### Linux/MacOS
+
+1. Open Terminal
+2. Navigate to the project directory
+3. Run:
+```bash
+chmod +x install.sh
+./install.sh
+```
+
+The installation script will:
+- Install Ollama if not already installed
+- Download and set up a small Llama2 model
+- Create a Python virtual environment
+- Install all required dependencies
+- Build the executable using PyInstaller
+
+After installation completes, you'll find the Sidekick executable in the `dist` folder.
+
+### Manual Installation
+
+If you prefer to install components manually, follow these steps:
+
 Sidekick requires Python 3.10 or higher. We recommend creating a virtual environment:
 
 ```bash
