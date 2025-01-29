@@ -6,7 +6,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from db.database import add_message, init_db
-from utils.ollama import generate_chat_completion, list_models
+from utils.ollama import generate_chat_completion, list_models, install_model
 
 
 class Sidekick(ctk.CTk):
@@ -14,17 +14,17 @@ class Sidekick(ctk.CTk):
         super().__init__()
         base_path = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(base_path, "images/sidekick.png")
-
+        
         self.title("Sidekick AI Assistant")
         self.geometry("800x700")
         self.db = init_db()
         self.full_response = ""
         self.is_generating = False
-
+        
         self.logo = Image.open(logo_path)
         self.logo_img = ImageTk.PhotoImage(self.logo)
         self.iconphoto(True, self.logo_img)
-
+        
         self.create_widgets()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -32,22 +32,50 @@ class Sidekick(ctk.CTk):
         # Configure fonts
         default_font = ctk.CTkFont(family="Roboto", size=12)
         text_area_font = ctk.CTkFont(family="Roboto", size=14)
-
+        
+        # Model management frame
+        model_frame = ctk.CTkFrame(self)
+        model_frame.pack(pady=5, padx=20, fill="x")
+        
+        # Model installation
+        model_label = ctk.CTkLabel(model_frame, text="Install Model:", font=default_font)
+        model_label.pack(side="left", padx=10)
+        
+        self.model_entry = ctk.CTkEntry(model_frame, width=150, font=default_font, placeholder_text="e.g., phi4")
+        self.model_entry.pack(side="left", padx=5)
+        
+        self.install_button = ctk.CTkButton(
+            model_frame,
+            text="Install",
+            font=default_font,
+            command=self.install_new_model,
+            width=100
+        )
+        self.install_button.pack(side="left", padx=5)
+        
+        # Progress label
+        self.progress_label = ctk.CTkLabel(model_frame, text="", font=default_font)
+        self.progress_label.pack(side="left", padx=10, fill="x", expand=True)
+        
         # Input frame
         input_frame = ctk.CTkFrame(self)
         input_frame.pack(pady=10, padx=20, fill="x")
-
+        
         # Prompt label and entry
         prompt_label = ctk.CTkLabel(input_frame, text="Enter Prompt:", font=default_font)
         prompt_label.pack(side="left", padx=10)
-
+        
         self.prompt_entry = ctk.CTkEntry(input_frame, width=200, font=default_font)
         self.prompt_entry.pack(side="left", expand=True, fill="x", padx=10)
         self.prompt_entry.bind("<Return>", self.generate_text)
-
+        
         # Generate button
         self.generate_button = ctk.CTkButton(
-            input_frame, text="Generate", command=self.generate_text, font=default_font, width=100
+            input_frame,
+            text="Generate",
+            command=self.generate_text,
+            font=default_font,
+            width=100
         )
         self.generate_button.pack(side="left", padx=10)
 
@@ -98,6 +126,44 @@ class Sidekick(ctk.CTk):
         )
         self.temp_value_label.pack(side="left", padx=10)
         self.temp_slider.configure(command=self.update_temp_label)
+
+    def refresh_model_list(self):
+        """Refresh the list of available models in the dropdown"""
+        self.available_models = list_models() or ["deepseek-r1"]
+        self.model_dropdown.configure(values=self.available_models)
+        # Keep the current selection if it still exists, otherwise select the first model
+        current_model = self.model_dropdown.get()
+        if current_model not in self.available_models:
+            self.model_dropdown.set(self.available_models[0])
+
+    def install_new_model(self):
+        model_name = self.model_entry.get().strip()
+        if not model_name:
+            messagebox.showerror("Error", "Please enter a model name")
+            return
+            
+        def update_progress(status):
+            self.progress_label.configure(text=status)
+            
+        def install_thread():
+            self.install_button.configure(state="disabled")
+            self.model_entry.configure(state="disabled")
+            
+            success = install_model(model_name, update_progress)
+            
+            self.install_button.configure(state="normal")
+            self.model_entry.configure(state="normal")
+            
+            if success:
+                self.progress_label.configure(text=f"Successfully installed {model_name}")
+                self.model_entry.delete(0, END)
+                # Refresh the model list in the main thread
+                self.after(0, self.refresh_model_list)
+            else:
+                self.progress_label.configure(text="Installation failed")
+                
+        thread = threading.Thread(target=install_thread)
+        thread.start()
 
     def update_temp_label(self, value):
         """Update temperature label when slider moves"""
