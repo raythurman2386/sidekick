@@ -5,8 +5,16 @@ from tkinter import messagebox, scrolledtext, END
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
+from config.logging_config import CURRENT_LOGGING_CONFIG
 from db.database import add_message, init_db
+from utils.logger import setup_logger
 from utils.ollama import generate_chat_completion, list_models, install_model
+
+logger = setup_logger(
+    "sidekick",
+    log_level=CURRENT_LOGGING_CONFIG["log_level"],
+    log_dir=CURRENT_LOGGING_CONFIG["log_dir"],
+)
 
 
 class SettingsWindow(ctk.CTkToplevel):
@@ -160,18 +168,22 @@ class SettingsWindow(ctk.CTkToplevel):
 
     def install_model(self):
         if self.installing:
+            logger.debug("Model installation already in progress")
             return
 
         model_name = self.model_entry.get().strip()
         if not model_name:
+            logger.warning("Attempted to install model with empty name")
             messagebox.showerror("Error", "Please enter a model name")
             return
 
         def update_progress(status):
+            logger.info(f"Model installation progress: {status}")
             self.progress_label.configure(text=status)
 
         def install_thread():
             self.installing = True
+            logger.info(f"Starting installation of model: {model_name}")
             self.install_button.configure(state="disabled")
             self.model_entry.configure(state="disabled")
             self.save_button.configure(state="disabled")
@@ -184,12 +196,14 @@ class SettingsWindow(ctk.CTkToplevel):
             self.save_button.configure(state="normal")
 
             if success:
+                logger.info(f"Successfully installed model: {model_name}")
                 self.progress_label.configure(text=f"Successfully installed {model_name}")
                 self.model_entry.delete(0, END)
                 # Refresh the model list in the main thread
                 self.after(0, self.parent.refresh_model_list)
                 self.after(0, self.refresh_model_dropdown)
             else:
+                logger.error(f"Failed to install model: {model_name}")
                 self.progress_label.configure(text="Installation failed")
 
         thread = threading.Thread(target=install_thread)
@@ -217,6 +231,7 @@ class SettingsWindow(ctk.CTkToplevel):
 class Sidekick(ctk.CTk):
     def __init__(self):
         super().__init__()
+        logger.info("Initializing Sidekick AI Assistant")
         base_path = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(base_path, "images/sidekick.png")
 
@@ -236,6 +251,7 @@ class Sidekick(ctk.CTk):
 
         # Initialize model settings
         self.available_models = list_models() or ["deepseek-r1:latest"]
+        logger.info(f"Available models: {self.available_models}")
         self.model_dropdown = ctk.CTkComboBox(self, values=self.available_models)
         self.model_dropdown.set(self.available_models[0])
         self.temp_slider = ctk.CTkSlider(self, from_=0, to=1, number_of_steps=100)
@@ -324,6 +340,7 @@ class Sidekick(ctk.CTk):
         self.text_area.grid(row=0, column=0, sticky="nsew", padx=2, pady=2)
 
     def open_settings(self):
+        logger.debug("Opening settings window")
         if self.settings_window is None or not ctk.CTkToplevel.winfo_exists(self.settings_window):
             self.settings_window = SettingsWindow(self)
         else:
@@ -368,25 +385,77 @@ class Sidekick(ctk.CTk):
 
     def generate_text(self, event=None):
         """Handle text generation"""
-        if not self.prompt_entry.get() or self.is_generating:
+        if self.is_generating:
+            logger.info("Stopping text generation")
+            self.is_generating = False
+            return
+
+        prompt = self.prompt_entry.get().strip()
+        if not prompt:
+            logger.warning("Attempted to generate text with empty prompt")
             return
 
         self.is_generating = True
         self.generate_button.configure(state="disabled")
         self.stop_button.configure(state="normal")
+        self.prompt_entry.delete(0, END)
 
-        if self.full_response:
-            self.save_to_db("assistant", self.full_response)
-            self.full_response = ""
+        logger.info(f"Starting text generation with model: {self.model_dropdown.get()}")
+        
+        def generate():
+            try:
+                response_generator = generate_chat_completion(
+                    prompt,
+                    self.model_dropdown.get(),
+                    self.temp_slider.get()
+                )
 
-        self.text_area.insert(END, "\n\n")
-        prompt = self.prompt_entry.get()
-        self.save_to_db("user", prompt)
+                self.text_area.insert(END, f"\nYou: {prompt}\nAssistant: ")
+                self.text_area.see(END)
 
-        # Start generation in a separate thread
-        self.generator_thread = threading.Thread(target=self.generate_in_thread, args=(prompt,))
-        self.generator_thread.daemon = True
-        self.generator_thread.start()
+                full_response = ""
+                for chunk in response_generator:
+                    if not self.is_generating:
+                        logger.info("Text generation stopped by user")
+                        break
+                    
+                    if chunk:
+                        full_response += chunk
+                        self.text_area.insert(END, chunk)
+                        self.text_area.see(END)
+
+                if self.is_generating:  # Only save if not stopped
+                    logger.debug("Saving conversation to database")
+                    add_message(self.db, "user", prompt)
+                    add_message(self.db, "assistant", full_response)
+
+            except Exception as e:
+                logger.error(f"Error during text generation: {str(e)}", exc_info=True)
+                self.text_area.insert(END, f"\nError: {str(e)}\n")
+                self.text_area.see(END)
+            finally:
+                self.is_generating = False
+                self.generate_button.configure(state="normal")
+                self.stop_button.configure(state="disabled")
+
+        thread = threading.Thread(target=generate)
+        thread.start()
+
+    def refresh_model_list(self):
+        """Refresh the list of available models in the dropdown"""
+        logger.debug("Refreshing model list")
+        self.available_models = list_models() or ["deepseek-r1:latest"]
+        self.model_dropdown.configure(values=self.available_models)
+        
+        # Keep the current selection if it still exists, otherwise select the first model
+        current_model = self.model_dropdown.get()
+        if current_model not in self.available_models:
+            logger.info(f"Previously selected model {current_model} no longer available, switching to {self.available_models[0]}")
+            self.model_dropdown.set(self.available_models[0])
+            
+        # Update settings window if it's open
+        if self.settings_window and ctk.CTkToplevel.winfo_exists(self.settings_window):
+            self.settings_window.refresh_model_dropdown()
 
     def stop_generation(self):
         """Stop the current text generation"""
@@ -400,10 +469,8 @@ class Sidekick(ctk.CTk):
         add_message(role, content)
 
     def on_closing(self):
-        """Handle window closing"""
-        if self.is_generating:
-            self.stop_generation()
-        self.quit()
+        logger.info("Shutting down Sidekick AI Assistant")
+        self.destroy()
 
 
 if __name__ == "__main__":
