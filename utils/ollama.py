@@ -45,11 +45,11 @@ def list_models():
 def install_model(model_name, progress_callback=None):
     """
     Install a model using Ollama's pull endpoint with progress tracking
-    
+
     Args:
         model_name (str): Name of the model to install
         progress_callback (callable): Optional callback function that receives progress updates
-        
+
     Returns:
         bool: True if installation was successful, False otherwise
     """
@@ -58,18 +58,18 @@ def install_model(model_name, progress_callback=None):
             f"{OLLAMA_API_URL}/pull",
             json={"name": model_name},
             stream=True,
-            timeout=600  # 10 minute timeout for large models
+            timeout=600,  # 10 minute timeout for large models
         )
         response.raise_for_status()
-        
+
         for line in response.iter_lines():
             if not line:
                 continue
-            
+
             try:
                 data = requests.compat.json.loads(line)
                 status = data.get("status", "")
-                
+
                 if progress_callback and status:
                     # Extract download progress if available
                     if "downloading" in data:
@@ -83,12 +83,12 @@ def install_model(model_name, progress_callback=None):
                     # Extract other status updates
                     else:
                         progress_callback(status)
-                        
+
             except requests.compat.json.JSONDecodeError:
                 continue
-                
+
         return True
-        
+
     except requests.RequestException as e:
         if progress_callback:
             progress_callback(f"Error: {str(e)}")

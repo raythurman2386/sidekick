@@ -16,12 +16,14 @@ Sidekick is an intelligent conversational assistant for your desktop, powered by
 Before installing Sidekick, you need to set up Ollama on your system:
 
 1. Install Ollama from [ollama.com](https://ollama.com)
-2. Pull your preferred model. For example:
-   ```bash
-   ollama pull deepseek-r1
-   # or
-   ollama pull phi4
-   ```
+2. You can install AI models in two ways:
+   - **Through the UI**: Open Sidekick's settings (⚙️) and use the "Install New Model" section. Enter the model name (e.g., `phi:latest`) and click "Install Model". Please be patient during the download as models can be quite large (several gigabytes).
+   - **Through the command line**:
+     ```bash
+     ollama pull deepseek-r1:latest
+     # or
+     ollama pull phi:latest
+     ```
 
 ## Installation
 
@@ -45,7 +47,7 @@ pip install -r requirements.txt
 Create a `.env` file in the project root:
 ```env
 OLLAMA_HOST="http://localhost:11434"
-AI_MODEL="llama2"  # or your preferred model
+AI_MODEL="deepseek-r1:latest"  # or your preferred model
 ```
 
 ## Running Sidekick
