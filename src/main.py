@@ -6,7 +6,7 @@ import customtkinter as ctk
 from PIL import Image, ImageTk
 
 from config.logging_config import CURRENT_LOGGING_CONFIG
-from db.database import add_message, init_db
+from db.database import init_db, add_message
 from utils.logger import setup_logger
 from utils.ollama import generate_chat_completion, list_models, install_model
 
@@ -405,7 +405,7 @@ class Sidekick(ctk.CTk):
         def generate():
             try:
                 response_generator = generate_chat_completion(
-                    prompt,
+                    [{"role": "user", "content": prompt}],
                     self.model_dropdown.get(),
                     self.temp_slider.get()
                 )
@@ -420,14 +420,15 @@ class Sidekick(ctk.CTk):
                         break
                     
                     if chunk:
-                        full_response += chunk
+                        # Update UI with the new chunk
                         self.text_area.insert(END, chunk)
                         self.text_area.see(END)
+                        full_response += chunk
 
                 if self.is_generating:  # Only save if not stopped
                     logger.debug("Saving conversation to database")
-                    add_message(self.db, "user", prompt)
-                    add_message(self.db, "assistant", full_response)
+                    add_message("user", prompt)
+                    add_message("assistant", full_response)
 
             except Exception as e:
                 logger.error(f"Error during text generation: {str(e)}", exc_info=True)

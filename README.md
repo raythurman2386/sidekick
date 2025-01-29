@@ -62,7 +62,7 @@ python main.py
 To create a standalone executable:
 
 ```bash
-pyinstaller --onefile --windowed --icon="images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="images:images" main.py
+pyinstaller --onefile --windowed --icon="src/images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="src/images:images" src/main.py
 ```
 
 The executable will be created in the `dist` directory.

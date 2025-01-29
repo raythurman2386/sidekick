@@ -1,4 +1,5 @@
 import requests
+import json
 
 OLLAMA_API_URL = "http://localhost:11434/api"
 
@@ -20,7 +21,16 @@ def generate_chat_completion(messages, model="deepseek-r1", temperature=0.4):
             timeout=30,
         )
         response.raise_for_status()
-        return response
+        
+        for line in response.iter_lines():
+            if line:
+                try:
+                    json_response = json.loads(line)
+                    if 'message' in json_response:
+                        yield json_response['message'].get('content', '')
+                except json.JSONDecodeError:
+                    continue
+                    
     except requests.RequestException as e:
         if "Connection refused" in str(e):
             raise Exception(
