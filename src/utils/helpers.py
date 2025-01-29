@@ -9,6 +9,15 @@ async def format_response(response):
     return formatted_response
 
 
+def format_size(size_in_bytes):
+    """ Convert bytes to MB or GB """
+    mb = size_in_bytes / (1024 * 1024)
+    if mb >= 1024:
+        return f"{mb/1024:.2f} GB"
+    else:
+        return f"{mb:.2f} MB"
+
+
 class CustomError(Exception):
     pass
 

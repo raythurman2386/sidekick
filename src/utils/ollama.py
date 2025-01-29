@@ -1,6 +1,8 @@
 import requests
 import json
 
+from src.utils.helpers import format_size
+
 OLLAMA_API_URL = "http://localhost:11434/api"
 
 
@@ -77,24 +79,22 @@ def install_model(model_name, progress_callback=None):
                 continue
 
             try:
-                data = requests.compat.json.loads(line)
+                data = json.loads(line)
                 status = data.get("status", "")
 
                 if progress_callback and status:
-                    # Extract download progress if available
-                    if "downloading" in data:
-                        total = data["downloading"].get("total", 0)
-                        completed = data["downloading"].get("completed", 0)
-                        if total > 0:
-                            progress = (completed / total) * 100
-                            progress_callback(f"Downloading: {progress:.1f}% - {status}")
-                        else:
-                            progress_callback(f"Downloading - {status}")
-                    # Extract other status updates
+                    total = data.get("total", 0)
+                    completed = data.get("completed", 0)
+                    if total > 0:
+                        progress = (completed / total) * 100
+                        total_size = format_size(total)
+                        completed_size = format_size(completed)
+                        progress_callback(f"{status}: {progress:.2f}% ({completed_size}/{total_size})")
                     else:
-                        progress_callback(status)
+                        completed_size = format_size(completed)
+                        progress_callback(f"{status}: {completed_size} completed")
 
-            except requests.compat.json.JSONDecodeError:
+            except json.JSONDecodeError:
                 continue
 
         return True
