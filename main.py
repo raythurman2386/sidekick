@@ -14,17 +14,17 @@ class Sidekick(ctk.CTk):
         super().__init__()
         base_path = os.path.dirname(os.path.abspath(__file__))
         logo_path = os.path.join(base_path, "images/sidekick.png")
-        
+
         self.title("Sidekick AI Assistant")
         self.geometry("800x700")
         self.db = init_db()
         self.full_response = ""
         self.is_generating = False
-        
+
         self.logo = Image.open(logo_path)
         self.logo_img = ImageTk.PhotoImage(self.logo)
         self.iconphoto(True, self.logo_img)
-        
+
         self.create_widgets()
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
 
@@ -32,29 +32,25 @@ class Sidekick(ctk.CTk):
         # Configure fonts
         default_font = ctk.CTkFont(family="Roboto", size=12)
         text_area_font = ctk.CTkFont(family="Roboto", size=14)
-        
+
         # Input frame
         input_frame = ctk.CTkFrame(self)
         input_frame.pack(pady=10, padx=20, fill="x")
-        
+
         # Prompt label and entry
         prompt_label = ctk.CTkLabel(input_frame, text="Enter Prompt:", font=default_font)
         prompt_label.pack(side="left", padx=10)
-        
+
         self.prompt_entry = ctk.CTkEntry(input_frame, width=200, font=default_font)
         self.prompt_entry.pack(side="left", expand=True, fill="x", padx=10)
         self.prompt_entry.bind("<Return>", self.generate_text)
-        
+
         # Generate button
         self.generate_button = ctk.CTkButton(
-            input_frame,
-            text="Generate",
-            command=self.generate_text,
-            font=default_font,
-            width=100
+            input_frame, text="Generate", command=self.generate_text, font=default_font, width=100
         )
         self.generate_button.pack(side="left", padx=10)
-        
+
         # Stop button
         self.stop_button = ctk.CTkButton(
             input_frame,
@@ -62,27 +58,24 @@ class Sidekick(ctk.CTk):
             command=self.stop_generation,
             font=default_font,
             width=100,
-            state="disabled"
+            state="disabled",
         )
         self.stop_button.pack(side="left", padx=10)
-        
+
         # Text area
         self.text_area = scrolledtext.ScrolledText(
-            self,
-            wrap="word",
-            font=text_area_font,
-            height=20
+            self, wrap="word", font=text_area_font, height=20
         )
         self.text_area.pack(pady=10, padx=20, expand=True, fill="both")
-        
+
         # Settings frame
         settings_frame = ctk.CTkFrame(self)
         settings_frame.pack(pady=10, padx=20, fill="x")
-        
+
         # Model selection
         model_label = ctk.CTkLabel(settings_frame, text="Model:", font=default_font)
         model_label.pack(side="left", padx=10)
-        
+
         self.available_models = list_models() or ["deepseek-r1"]
         self.model_dropdown = ctk.CTkComboBox(
             settings_frame,
@@ -91,25 +84,17 @@ class Sidekick(ctk.CTk):
         )
         self.model_dropdown.set(self.available_models[0])
         self.model_dropdown.pack(side="left", padx=10)
-        
+
         # Temperature control
         temp_label = ctk.CTkLabel(settings_frame, text="Temperature:", font=default_font)
         temp_label.pack(side="left", padx=10)
-        
-        self.temp_slider = ctk.CTkSlider(
-            settings_frame,
-            from_=0,
-            to=1,
-            number_of_steps=100
-        )
+
+        self.temp_slider = ctk.CTkSlider(settings_frame, from_=0, to=1, number_of_steps=100)
         self.temp_slider.set(0.4)
         self.temp_slider.pack(side="left", padx=10, expand=True, fill="x")
-        
+
         self.temp_value_label = ctk.CTkLabel(
-            settings_frame,
-            text="0.4",
-            font=default_font,
-            width=30
+            settings_frame, text="0.4", font=default_font, width=30
         )
         self.temp_value_label.pack(side="left", padx=10)
         self.temp_slider.configure(command=self.update_temp_label)
@@ -129,17 +114,15 @@ class Sidekick(ctk.CTk):
         try:
             messages = [{"role": "user", "content": prompt}]
             response = generate_chat_completion(
-                messages,
-                self.model_dropdown.get(),
-                self.temp_slider.get()
+                messages, self.model_dropdown.get(), self.temp_slider.get()
             )
-            
+
             for line in response.iter_lines():
                 if not self.is_generating:
                     break
                 if line:
                     try:
-                        decoded_line = line.decode('utf-8')
+                        decoded_line = line.decode("utf-8")
                         content = json.loads(decoded_line)["message"]["content"]
                         # Schedule UI update in the main thread
                         self.after(0, self.update_text_area, content)
@@ -161,19 +144,19 @@ class Sidekick(ctk.CTk):
         """Handle text generation"""
         if not self.prompt_entry.get() or self.is_generating:
             return
-            
+
         self.is_generating = True
         self.generate_button.configure(state="disabled")
         self.stop_button.configure(state="normal")
-        
+
         if self.full_response:
             self.save_to_db("assistant", self.full_response)
             self.full_response = ""
-        
+
         self.text_area.insert(END, "\n\n")
         prompt = self.prompt_entry.get()
         self.save_to_db("user", prompt)
-        
+
         # Start generation in a separate thread
         self.generator_thread = threading.Thread(target=self.generate_in_thread, args=(prompt,))
         self.generator_thread.daemon = True
@@ -182,7 +165,7 @@ class Sidekick(ctk.CTk):
     def stop_generation(self):
         """Stop the current text generation"""
         self.is_generating = False
-        if hasattr(self, 'generator_thread') and self.generator_thread.is_alive():
+        if hasattr(self, "generator_thread") and self.generator_thread.is_alive():
             self.generator_thread.join(timeout=1.0)
         self.cleanup_generation()
 

@@ -15,12 +15,12 @@ Sidekick is an intelligent conversational assistant for your desktop, powered by
 
 Before installing Sidekick, you need to set up Ollama on your system:
 
-1. Install Ollama from [ollama.ai](https://ollama.ai)
+1. Install Ollama from [ollama.com](https://ollama.com)
 2. Pull your preferred model. For example:
    ```bash
    ollama pull deepseek-r1
    # or
-   ollama pull qwen2.5-coder
+   ollama pull phi4
    ```
 
 ## Installation
@@ -82,4 +82,4 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the BSD 3-Clause License - see the LICENSE file for details.

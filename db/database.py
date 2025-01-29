@@ -53,7 +53,5 @@ def add_message(role, content):
 def get_chat_log():
     with db_session() as c:
         c.execute("SELECT role, content FROM chat_log")
-        chat_log = [
-            {"role": role, "content": content} for role, content in c.fetchall()
-        ]
+        chat_log = [{"role": role, "content": content} for role, content in c.fetchall()]
     return chat_log
