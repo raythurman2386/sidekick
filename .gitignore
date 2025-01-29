@@ -83,8 +83,10 @@ Pipfile.lock
 
 # virtualenv
 venv/
+.venv/
 ENV/
-
+.idea/
+.vscode/
 # Spyder project settings
 .spyderproject
 .spyproject

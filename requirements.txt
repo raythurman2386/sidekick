@@ -1,0 +1,5 @@
+customtkinter>=5.2.1
+Pillow>=10.1.0
+requests>=2.31.0
+python-dotenv>=1.0.0
+pyinstaller>=6.3.0 

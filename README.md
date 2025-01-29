@@ -1,57 +1,85 @@
-# Sidekick - Your Desktop Companion
+# Sidekick - Your Local AI Desktop Companion
 
-Sidekick is an intelligent conversational assistant for your desktop, powered by advanced chatGPT technology. It allows you to have natural conversations on a wide range of topics for an engaging and productive experience.
+Sidekick is an intelligent conversational assistant for your desktop, powered by local AI through Ollama. It provides a seamless desktop experience for interacting with various AI models while keeping all your data private and secure on your local machine.
 
 ## Key Features
 
-- Standalone desktop application with an intuitive user interface built with Custom Tkinter
-- Seamlessly integrates into your workflow for on-demand assistance
-- Conversations powered by OpenAI's robust natural language processing capabilities
-- Recalls previous conversations using a local SQLite database for chat logs
-- Lightweight and performs well even on low-powered machines
-- Cross-platform support for Windows, Mac and Linux
+- 🖥️ Standalone desktop application with an intuitive user interface built with Custom Tkinter
+- 🚀 Fast responses with local AI processing
+- 🔒 Complete privacy - all processing happens on your machine
+- 💾 Conversation history stored in local SQLite database
+- 🪶 Lightweight and efficient performance
+- 🌐 Cross-platform support for Windows, Mac and Linux
+
+## Prerequisites
+
+Before installing Sidekick, you need to set up Ollama on your system:
+
+1. Install Ollama from [ollama.ai](https://ollama.ai)
+2. Pull your preferred model. For example:
+   ```bash
+   ollama pull deepseek-r1
+   # or
+   ollama pull qwen2.5-coder
+   ```
 
 ## Installation
 
-Sidekick requires Python 3.6 or higher. It is recommended to create a virtual environment before installation.
+Sidekick requires Python 3.10 or higher. We recommend creating a virtual environment:
 
-```
-python3 -m venv venv
+```bash
+python -m venv venv
+# On Windows
+.\venv\Scripts\activate
+# On Mac/Linux
 source venv/bin/activate
 ```
 
 Install the requirements:
-
-```
+```bash
 pip install -r requirements.txt
 ```
 
-You will need an OpenAI API key to use this project. You can get one for free from the OpenAI website [here](https://platform.openai.com/account/api-keys).
+## Configuration
 
-Once you have an API key, create a .env file and set your env variable:
-
+Create a `.env` file in the project root:
+```env
+OLLAMA_HOST="http://localhost:11434"
+AI_MODEL="llama2"  # or your preferred model
 ```
-OPENAI_API_KEY="<your_key_here>"
-```
 
-You can then run sidekick:
+## Running Sidekick
 
-```
+Start the application:
+```bash
 python main.py
 ```
 
+## Building from Source
+
+To create a standalone executable:
+
+```bash
+pyinstaller --onefile --windowed --icon="images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="images:images" main.py
+```
+
+The executable will be created in the `dist` directory.
+
 ## How It Works
 
-Sidekick provides a text-based conversational interface using OpenAI's advanced models under the hood. You can ask questions, seek opinions or advice, or simply have free-flowing discussions on various topics. Sidekick remembers important context from previous conversations using a local SQLite database, allowing it to provide relevant and personalized responses.
+Sidekick provides a text-based conversational interface using Ollama's local AI models. All processing happens on your machine, ensuring privacy and quick response times. The application stores conversation history in a local SQLite database, allowing for context-aware interactions while maintaining data privacy.
 
-The application has a compact footprint and responsive performance even on low-powered machines. The Python-based architecture makes it highly cross-platform as well, supporting Windows, MacOS and Linux with the same codebase.
+## Troubleshooting
 
-Overall, Sidekick aims to be an engaging, intelligent and productive addition to your desktop environment. Its conversational capabilities help augment your work, learning, research or even casual interests that you discuss with it.
+1. Ensure Ollama is running in the background
+2. Verify your model is properly installed using `ollama list`
+3. Check the Ollama host URL in your `.env` file
+4. Make sure your system meets the minimum requirements for your chosen model
 
-### Build
+## Contributing
 
-If you want to build your own and pin it to your taskbar or startmenu
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-Pyinstaller is currently in the requirements.txt, so if you properly installed the dependencies you should be able to run:
+## License
 
-`pyinstaller --onefile --windowed --icon="images/sidekick.ico" --noconsole --hidden-import=tkinter --name="Sidekick" --add-data="images:images"  main.py`
+This project is licensed under the MIT License - see the LICENSE file for details.
