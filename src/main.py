@@ -5,10 +5,10 @@ from tkinter import messagebox, scrolledtext, END
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
-from config.logging_config import CURRENT_LOGGING_CONFIG
-from db.database import init_db, add_message
-from utils.logger import setup_logger
-from utils.ollama import generate_chat_completion, list_models, install_model
+from src.config.logging_config import CURRENT_LOGGING_CONFIG
+from src.db.database import init_db, add_message
+from src.utils.logger import setup_logger
+from src.utils.ollama import generate_chat_completion, list_models, install_model
 
 logger = setup_logger(
     "sidekick",
