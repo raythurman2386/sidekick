@@ -54,4 +54,4 @@ pip install -r requirements.txt
 
 - [Configure Sidekick](configuration.md)
 - [Running Sidekick](../usage/running.md)
-- [Troubleshooting](../troubleshooting.md)
+- [Troubleshooting](../troubleshooting/troubleshooting.md)

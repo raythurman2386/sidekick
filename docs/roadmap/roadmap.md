@@ -89,4 +89,4 @@ Features are prioritized based on:
 
 ## Contributing
 
-Want to help implement these features? Check our [Contributing Guide](contributing.md) to get started!
+Want to help implement these features? Check our [Contributing Guide](../contributing/contributing.md) to get started!

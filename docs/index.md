@@ -17,7 +17,7 @@ Sidekick is an intelligent conversational assistant for your desktop, powered by
 - [Installation Guide](installation/guide.md)
 - [Configuration](installation/configuration.md)
 - [Running Sidekick](usage/running.md)
-- [Troubleshooting](troubleshooting.md)
+- [Troubleshooting](troubleshooting/troubleshooting.md)
 
 ## Support
 
@@ -25,4 +25,4 @@ If you need help or have questions, please:
 
 - Check our [documentation](https://github.com/raythurman2386/sidekick)
 - Open an [issue](https://github.com/raythurman2386/sidekick/issues)
-- Review the [troubleshooting guide](troubleshooting.md)
+- Review the [troubleshooting guide](troubleshooting/troubleshooting.md)

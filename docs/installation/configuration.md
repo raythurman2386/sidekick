@@ -37,4 +37,4 @@ AI_MODEL="deepseek-r1:latest"  # or your preferred model
 ## Next Steps
 
 - [Running Sidekick](../usage/running.md)
-- [Troubleshooting Configuration Issues](../troubleshooting.md)
+- [Troubleshooting Configuration Issues](../troubleshooting/troubleshooting.md)

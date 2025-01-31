@@ -53,4 +53,4 @@ Access settings by clicking the ⚙️ button:
 
 - [Building from Source](building.md)
 - [How It Works](how-it-works.md)
-- [Troubleshooting](../troubleshooting.md)
+- [Troubleshooting](../troubleshooting/troubleshooting.md)
