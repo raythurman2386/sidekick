@@ -1,5 +1,9 @@
 # Sidekick - Your Local AI Desktop Companion
 
+[![Python 3.10+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License: BSD 3](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue.svg)](https://raythurman2386.github.io/sidekick/)
+
 Sidekick is an intelligent conversational assistant for your desktop, powered by local AI through Ollama. It provides a seamless desktop experience for interacting with various AI models while keeping all your data private and secure on your local machine.
 
 ## Key Features

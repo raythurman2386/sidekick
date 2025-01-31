@@ -1,0 +1,53 @@
+site_name: Sidekick - Your Local AI Desktop Companion
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - search.suggest
+    - search.highlight
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - Installation:
+    - Prerequisites: installation/prerequisites.md
+    - Installation Guide: installation/guide.md
+    - Configuration: installation/configuration.md
+  - Usage:
+    - Running Sidekick: usage/running.md
+    - Building from Source: usage/building.md
+    - How It Works: usage/how-it-works.md
+  - Troubleshooting: troubleshooting/troubleshooting.md
+  - Contributing: contributing/contributing.md
+  - Roadmap: roadmap/roadmap.md
+  - License: license/license.md
